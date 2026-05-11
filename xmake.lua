@@ -1,35 +1,32 @@
--- set minimum xmake version
-set_xmakever("2.8.2")
-
--- includes
+-- include subprojects
 includes("lib/commonlibf4")
 
--- set project
-set_project("Remember-Lockpick-Angle-NG")
-set_version("1.0.0")
-set_license("GPL-3.0")
+-- name and version
+local plugin_name = "Remember-Lockpick-Angle-NG"
+local plugin_version = "1.1.0"
+local plugin_version_major, plugin_version_minor, plugin_version_patch = plugin_version:match("^(%d+)%.(%d+)%.(%d+)$")
 
--- set defaults
+-- set project constants
+set_project(plugin_name)
+set_version(plugin_version)
+set_license("GPL-3.0")
 set_languages("c++23")
 set_warnings("allextra")
 
--- set policies
-set_policy("package.requires_lock", true)
-
--- add rules
-add_rules("mode.debug", "mode.releasedbg")
+-- add common rules
+add_rules("mode.release", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
 
--- targets
-target("Remember-Lockpick-Angle-NG")
-    -- add dependencies to target
-    add_deps("commonlibf4")
+-- override runtime count
+add_defines("COMMONLIB_RUNTIMECOUNT=3")
 
-    -- add commonlibsse plugin
+-- define targets
+target(plugin_name)
     add_rules("commonlibf4.plugin", {
-        name = "commonlibf4-template",
-        author = "qudix",
-        description = "F4SE plugin template using CommonLibF4"
+        name = plugin_name,
+        author = "Ungeziefi",
+        description = "Remember Lockpick Angle updated for NG & AE",
+        plugin_template = path.join("res/commonlibf4-plugin.cpp.in")
     })
 
     -- add src files
@@ -37,3 +34,11 @@ target("Remember-Lockpick-Angle-NG")
     add_headerfiles("src/**.h")
     add_includedirs("src")
     set_pcxxheader("src/pch.h")
+
+    -- pass name and version
+    add_defines(
+        'PLUGIN_NAME="' .. plugin_name .. '"',
+        "PLUGIN_VERSION_MAJOR=" .. plugin_version_major,
+        "PLUGIN_VERSION_MINOR=" .. plugin_version_minor,
+        "PLUGIN_VERSION_PATCH=" .. plugin_version_patch
+    )
